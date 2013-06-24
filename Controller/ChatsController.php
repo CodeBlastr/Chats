@@ -9,6 +9,7 @@ class ChatsController extends AppController {
 	
 	public $layout = null; //Setting this here because its mostly ajax calls
 
+	public $uses = array('Chats.Chat');
 /**
  * view method
  *
@@ -16,17 +17,14 @@ class ChatsController extends AppController {
  * @return void
  */
 	public function view() {
+		$this->layout = null;
 		//Create the chat key
 		if($this->request->isAjax()) {
-			
-			$uid = $this->Session->read('Auth.User.id');
-			
 			//If Key is set and the room is set send the view for the chat boxes
 			//else create the key and send the json back
-			if(isset($this->request->data['Chat']['key'])) {
-				if(isset($this->request->data['Chat']['room'])) {
-					$key = $this->request->data['Chat']['key'];
-					$room = $this->request->data['Chat']['room'];
+			if(isset($this->request->data['Chat']['chat_hash'])) {
+					$key = $this->request->data['Chat']['chat_hash'];
+					$uid = $this->Session->read('Auth.User.id');
 					if($uid == __SYSTEM_GUESTS_USER_ROLE_ID) {
 						$name = 'guest' . uniqid();
 					}else {
@@ -34,22 +32,19 @@ class ChatsController extends AppController {
 					}
 					//Checks the key and send data to the view
 					if($this->Chat->checkChatKey($key, $uid)) {
-						$this->set(compact($key, $uid, $room, $name));
+						$this->set(compact($key, $uid, $name));
 					}else {
 						throw new ForbiddenException();
 					}
-				}else {
-					//If no room available sends back nothing
-					//View will handle what gets displayed
-				}	
 				
 			}else {
 				$this->view = 'response';
 				$data = $this->Chat->save();
-				$this->set('chat', $data);
+				$this->set('data', $data);
 			}
 			
 		}else {
+			debug('fail');
 			throw new MethodNotAllowedException();
 		}
 		
@@ -97,8 +92,7 @@ class ChatsController extends AppController {
 	 */
 	
 	public function create_room() {
-		debug(get_defined_constants());
-		break;
+		
 		if (!$this->request->is('post')) {
 			throw new MethodNotAllowedException();
 		}	
@@ -140,6 +134,10 @@ class ChatsController extends AppController {
 		}else {
 			throw new ForbiddenException();
 		}
+		
+	}
+	
+	public function testChat() {
 		
 	}
 }
