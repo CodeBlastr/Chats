@@ -13,8 +13,4 @@
 	
 ?>
 
-<script>
-	
-	
-	
-</script>
+<script type="text/javascript" src="/Chats/js/chatbox.js"></script>
