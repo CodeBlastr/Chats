@@ -50,11 +50,10 @@ io.set('authorization', function (handshakeData, cb) {
 io.sockets.on('connection', function (socket) {
   socket.join(socket.handshake.room);
   socket.emit('hello', { message: 'Hello '+socket.handshake.name+', Welcome to '+socket.handshake.room });
-  socket.on('message', function (data) {
-      io.sockets.in(socket.handshake.room).emit('message', data);
+  
+  socket.on('message', function (message) {
+  	  console.log(message);
+      io.sockets.in(socket.handshake.room).emit('message', message);
   });
-  
-  console.log(io.sockets.manager.rooms)
-  
   
 });

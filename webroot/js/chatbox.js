@@ -8,16 +8,19 @@
 	
 	
 	socket.on('hello', function (data) {
-		console.log(data);
+		chatbox.find('.message-area').append('<div class="chat-message">'+data.message+'</div>');
 	});
 	
 	socket.on('message', function (data) {
-	    console.log(data);
+	    chatbox.find('.message-area').append('<div class="chat-message">'+data.name+' - '+data.message+'</div>');
 	});
 	
 	
-	
-	
+	$('#chatBtn').on('click', function (event) {
+		var data = {name: chatname, message: $('#chatInput').val()};
+		console.log(data);
+		socket.emit('message', data);
+	});
 	
 })(jQuery);
 

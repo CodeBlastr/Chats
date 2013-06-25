@@ -15,3 +15,5 @@
 	
 	
 ?>
+
+<link rel="stylesheet" type="text/css" href="/Chats/css/chatbox.css" />
