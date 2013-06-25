@@ -10,15 +10,25 @@ class ChatsController extends AppController {
 	public $layout = null; //Setting this here because its mostly ajax calls
 
 	public $uses = array('Chats.Chat');
+	
+	public $allowedActions = array('check_key', 'create_room');
 /**
  * view method
  *
  * @param string $id
  * @return void
  */
-	public function view() {
+	public function view($room = null) {
 		$this->layout = null;
-		//Create the chat key
+		
+		if(isset($this->request->data['Chat']['room'])) {
+			$room = $this->request->data['Chat']['room'];
+		}
+		
+		if(!isset($room)) {
+			$room = __SYSTEM_SITE_NAME;
+		}
+		
 		if($this->request->isAjax()) {
 			//If Key is set and the room is set send the view for the chat boxes
 			//else create the key and send the json back
@@ -32,7 +42,10 @@ class ChatsController extends AppController {
 					}
 					//Checks the key and send data to the view
 					if($this->Chat->checkChatKey($key, $uid)) {
-						$this->set(compact($key, $uid, $name));
+						$this->set('key', $key);
+						$this->set('uid', $uid);
+						$this->set('name', $name);
+						$this->set('room', $room);
 					}else {
 						throw new ForbiddenException();
 					}
@@ -40,6 +53,7 @@ class ChatsController extends AppController {
 			}else {
 				$this->view = 'response';
 				$data = $this->Chat->save();
+				$data['Chat']['room'] = $room;
 				$this->set('data', $data);
 			}
 			
@@ -61,28 +75,21 @@ class ChatsController extends AppController {
  * @param $uid - int
  * @return void
  */
-	public function check_key($uid = null, $key = null) {
+	public function check_key($key) {
 		$this->view = 'response';
 		
-		//Do Not allow Get
-		if (!$this->request->is('post')) {
-			throw new MethodNotAllowedException();
-		}
-		
-		if(!isset($this->request->data['uid']) || !isset($this->request->data['key'])) {
+		if(!isset($key)) {
 			throw new ForbiddenException();
 		}
 		
-		$uid = $this->request->data['uid'];
-		$key = $this->request->data['key'];
-		if ($this->Chat->checkChatKey($key, $uid)) {
+		if ($this->Chat->checkChatKey($key)) {
 			$data = array(
 				'isValid' => true,
 			);
 			$this->set('data', $data);
+		}else {
+			throw new ForbiddenException();
 		}
-		
-		throw new ForbiddenException();
 	}
 	
 	/**
@@ -91,28 +98,15 @@ class ChatsController extends AppController {
 	 * to server
 	 */
 	
-	public function create_room() {
-		
-		if (!$this->request->is('post')) {
-			throw new MethodNotAllowedException();
-		}	
+	public function create_room($key) {
 			
 		$this->view = 'response';
-		$uid = $this->request->data['uid'];
-		$key = $this->request->data['key'];
-		
 		//Sets the room to The site name if not provided
-		if(isset($this->request->data['room'])) {
-			$room = $this->request->data['room'];
-		}else {
-			$room = __SYSTEM_SITE_NAME;
-		}
 		
-		if ($this->Chat->checkChatKey($key, $uid)) {
+		
+		if ($this->Chat->checkChatKey($key)) {
 			$data = array(
-				'uid' => $uid,
-				'room' => $room,
-				'key' => $key
+				'isValid' => true,
 			);
 			$this->set('data', $data);
 		}else {

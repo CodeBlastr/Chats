@@ -24,15 +24,13 @@ class Chat extends AppModel {
 	  * @return bool - True if key exists
 	  */
 	  
-	 public function checkChatKey($key, $uid) {
+	 public function checkChatKey($key) {
 	 	$chat = $this->find('first', array(
 			'conditions' => array('chat_hash' => $key),
 		));
 		
 		if(isset($chat) && !empty($chat)) {
-			if($chat['Chat']['creator_id'] == $uid) {
-				return true;
-			}
+			return true;
 		}
 		
 		return false;
