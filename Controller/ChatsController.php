@@ -5,7 +5,7 @@ App::uses('AppController', 'Controller');
  *
  * @property Chat $Chat
  */
-class ChatsController extends AppController {
+class _ChatsController extends AppController {
 	
 	public $layout = null; //Setting this here because its mostly ajax calls
 
@@ -134,4 +134,8 @@ class ChatsController extends AppController {
 	public function testChat() {
 		
 	}
+}
+
+if (!isset($refuseInit)) {
+	class ChatsController extends _ChatsController {}
 }
