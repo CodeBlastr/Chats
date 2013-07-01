@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Setting for extended Controllder
+ * $refuseInit = true; require_once(ROOT.'/app/Plugin/Chats/Controller/ChatsController.php');
+ */
+
 App::uses('AppController', 'Controller');
 /**
  * Chats Controller
