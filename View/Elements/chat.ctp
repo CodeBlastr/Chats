@@ -10,9 +10,6 @@
 		</div>
 		
 	</div>
-		
-     <script src="/Chats/js/socket.io.min.js"></script>
-	<script type="text/javascript" src="/Chats/js/chatbox.js"></script>
 	
 <?php else: ?>
 		

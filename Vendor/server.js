@@ -56,4 +56,9 @@ io.sockets.on('connection', function (socket) {
       io.sockets.in(socket.handshake.room).emit('message', message);
   });
   
+  socket.on('webRTCsignal', function (signal) {
+  	  console.log(signal);
+      io.sockets.in(socket.handshake.room).emit('webRTCsignal', signal);
+  });
+  
 });
