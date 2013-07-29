@@ -1,25 +1,20 @@
-<?php debug($chat); ?>
-<?php if(isset($chat['Chat']['chat_hash']) && isset($chat['Chat']['room'])): ?>
-	
-	<div id="ChatBox" data-name="<?php echo $chat['Chat']['name'] ?>" data-key="<?php echo $chat['Chat']['chat_hash']; ?>" data-room="<?php echo $chat['Chat']['room']; ?>">
+	<div id="ChatBox">
 		<div class="message-area">
-		
+			<p>Chat is Currently Unavailable</p>
 		</div>
-		<div id="chatAction" class="well">
+		
+		<div id="chatAction" class="well hidden">
 			<input type="textInput" id="chatInput" /><button id="chatBtn" class="btn">Send Message</button>
 		</div>
 		
 	</div>
 	
-<?php else: ?>
-		
-	<div id="ChatBox" data-name="<?php echo $chat['Chat']['name'] ?>" data-key="<?php echo $chat['Chat']['chat_hash']; ?>" data-room="<?php echo $chat['Chat']['room']; ?>">
-		<div class="message-area" style="float:left;">
-			<p>Chat is Currently Unavailable</p>
-		</div>
+	<div id="chatUserOnline">
+		<ul>
+			
+		</ul>
 	</div>
 		
-<?php endif; ?>
 
 <style>
 	#ChatBox {
@@ -27,7 +22,6 @@
 		top: 50px;
 		right: 0px;
 		width: 300px;
-		height: 357px;
 		border: 1px solid #000;
 		background: #ccc;
 		overflow: hidden;
@@ -53,3 +47,7 @@
     	width: 100%;
 	}
 </style>
+
+<script src="/Chats/js/socket.io.min.js"></script>
+<script type="text/javascript" src="/Chats/js/chatbox.js"></script>
+<link rel="stylesheet" type="text/css" href="/Chats/css/chatbox.css" />
