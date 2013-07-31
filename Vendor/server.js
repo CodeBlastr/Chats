@@ -5,11 +5,11 @@ http.createServer(function (req, res) {
 });
 
 
-var io = require('socket.io').listen(1337);
-
 var xmlHttp = null;
 var clients = [];
 var offers = [];
+
+var io = require('socket.io').listen(1337);
 
 io.set('authorization', function (handshakeData, cb) {
     //Get the origin of the request fromt the headers
@@ -19,9 +19,7 @@ io.set('authorization', function (handshakeData, cb) {
     handshakeData.key = key;
     var room = handshakeData.query.room;
     var role = handshakeData.query.role;
-    console.log('request from origin '+origin+' : key:'+key);
     
-    console.log('request sent to: '+origin+'/chats/chats/check_key/'+key+'.json')
     http.get(origin+'/chats/chats/check_key/'+key+'.json', function(res) {
   		if(res.statusCode == 200) {
   			if(role == 'presenter') {
@@ -36,7 +34,6 @@ io.set('authorization', function (handshakeData, cb) {
   				handshakeData.room = room;
   				cb(null, true);
   			}else {
-  				console.log('check room: ' + origin+'/chats/chats/create_room/'+key+'.json');
   				http.get(origin+'/chats/chats/create_room/'+key+'.json', function(roomres) {
   					if(roomres.statusCode == 200) {
   						handshakeData.room = room;
@@ -58,49 +55,54 @@ io.set('authorization', function (handshakeData, cb) {
 
 io.sockets.on('connection', function (socket) {
 	
-  var client = { id: socket.id };
+  var client = {};
+  client.id = socket.id
   client.name = socket.handshake.name;
   client.role = socket.handshake.role;
+  client.room = socket.handshake.room;
+  client.key = socket.handshake.key;
   
+  clients.push(client);
   socket.join(socket.handshake.room);
   
-  if(socket.handshake.room in io.sockets.manager.rooms) {
-  	clients[socket.handshake.room].push(client);
-  }else {
-  	clients[socket.handshake.room] = [];
-  	clients[socket.handshake.room].push(client);
-  }
-  console.log(clients[socket.handshake.room]);
-  
   //Tell people that a new peer connected to their room
-  socket.emit('hello', { message: 'Hello '+socket.handshake.name+', Welcome to '+socket.handshake.room });
+  socket.json.emit('hello', { message: 'Hello '+socket.handshake.name+', Welcome to '+socket.handshake.room });
   
   //Send the get_peers to client on connection
-  socket.emit('get_peers',
+  peers = [];
+  for (var i=0;i<clients.length;i++) {
+  	for (var j=0 ; j < io.sockets.clients(socket.handshake.room).length ; j++) {
+  		if(io.sockets.clients(socket.handshake.room)[j].id == clients[i].id){
+  			peers.push(clients[i]);
+  		}	
+  	}
+  }
+  
+  console.log(peers);
+  socket.json.emit('get_peers',
       {
-        connections: clients[socket.handshake.room],
+        connections: peers,
         you: client
       });
   
   //If an offer has already been made send it to the new client for connection
   if(socket.handshake.room in offers) {
   	data = offers[socket.handshake.room];
-  	socket.emit('receive_offer', data);
+  	socket.json.emit('receive_offer', data);
   }
   
   //Let everyone else in the room know your are here
-  socket.broadcast.to(socket.handshake.room).emit('new_peer_connected', client);
+  socket.broadcast.to(socket.handshake.room).json.emit('new_peer_connected', client);
   
   
   socket.on('message', function (message) {
-      io.sockets.in(socket.handshake.room).emit('message', message);
+  	  message.message = message.message.replace(/[|&;$%@"<>()+,]/g, "");
+      io.sockets.in(socket.handshake.room).json.emit('message', message);
   });
   
   //Receive and Send ICE canidates to room memebers
   socket.on('send_ice_candidate', function(data){
-  	console.log('recieved ice candidate');
-  	
-  	 socket.broadcast.to(socket.handshake.room).emit('receive_ice_candidate',
+  	 socket.json.broadcast.to(socket.handshake.room).emit('receive_ice_candidate',
         {
           label: data.label,
           candidate: data.candidate,
@@ -112,7 +114,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('send_offer', function(data) {
     var data = { sdp: data.sdp, socketId: socket.id };
     offers[socket.handshake.room] = data;	
-    socket.broadcast.to(socket.handshake.room).emit('receive_offer', data);
+    socket.json.broadcast.to(socket.handshake.room).emit('receive_offer', data);
     
   });
   
@@ -122,19 +124,18 @@ io.sockets.on('connection', function (socket) {
   	
   	http.get(socket.handshake.origin+'/chats/chats/destroy/'+socket.handshake.key+'.json', function(res){
   		if(res.statusCode == 200) {
-  			socket.broadcast.to(room).emit('client_disconnect', id);
+  			socket.json.broadcast.to(room).emit('client_disconnect', id);
   		}
   	});
   	
-  	if(socket.handshake.room in io.sockets.manager.rooms) {
-  		for (var i=0;i<clients[socket.handshake.room].length;i++) {
-				if(clients[socket.handshake.room][i].id == id) {
-					delete clients[socket.handshake.room][i];	
+  	if(room in clients) {
+  		for (var i=0;i<clients.length;i++) {
+				if(clients[room][i].id == id) {
+					delete clients[i];
+					console.log('Removed: '+id);
 				}
 			}
   	}
-  	
-  	socket.leave(socket.handshake.room);
   		
   });
   

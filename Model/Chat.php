@@ -6,6 +6,13 @@ App::uses('AppModel', 'Model');
  */
 class Chat extends AppModel {
 	
+	public $belongsTo = array(
+        'User' => array(
+            'className' => 'Users.User',
+            'foreignKey' => 'creator_id'
+        )
+    );
+	
 	/**
 	 * Before save - Generates a hash with the User ID to generate a Hash Key
 	 */
@@ -35,5 +42,32 @@ class Chat extends AppModel {
 		
 		return false;
 	 }
+	 
+	 /**
+	  * Gets User Associated with the key
+	  * @param $key - chat hashed key
+	  * @return array - User
+	  */
+	  
+	  public function getUserByKey($key) {
+	  	 
+		 $chat = $this->findByChatHash($key);
+		 
+		 $user = $this->User->find('first', array(
+		 		'conditions' => array('id' => $chat['Chat']['creator_id']),
+		 		'fields' => array('username'),
+				'contain' => array(
+					'Gallery' => array(
+						'fields' => array('id', 'gallery_thumb_id'),
+						'GalleryImage'
+					)
+				)
+				));
+		//Clean up the array remove unecessay data 
+		$user['GalleryImage'] = $user['Gallery'][0]['GalleryImage'][0]['dir'] . $user['Gallery'][0]['GalleryImage'][0]['filename'];
+		unset($user['Gallery']);
+		return $user;
+		 
+	  }
 	 
 }

@@ -1,0 +1,152 @@
+#ChatBox {
+		position: fixed;
+		bottom: 0;
+		right: 0px;
+		width: 300px;
+		border: 1px solid #CCCCCC;
+		background: #F6F6F6;
+		padding: 10px;
+		overflow:hidden;
+	}
+	
+	#ChatBox .close-chat {
+	    float: left;
+	    margin-right: 5px;
+	    padding: 2px;
+	}
+	
+	#ChatBox .message-area {
+		overflow-y:auto;
+	}
+	
+	#ChatBox .welcome {
+		padding: 8px;
+		background: #fff;
+		border: 1px solid #ccc;
+	    border-radius: 10px;
+	}
+	
+	#ChatBox .message-area .chat-message,
+	#ChatBox .message-area .chat-message-me {
+	    margin: 5px 0;
+	    padding: 10px;
+	    clear: both;
+	}
+	
+	#ChatBox .message-area .chat-user {
+	    float: left;
+    	overflow: hidden;
+    	text-align: center;
+    	width: 20%;
+	}
+	
+	#ChatBox .message-area .chat-message-me .chat-user {
+		float: right;
+	}
+	
+	
+	#ChatBox .message-area .chat-user * {
+		margin: 0 auto;
+	}
+	
+	#ChatBox .message-area .message {
+		width: 80%;
+	}
+	
+	#ChatBox .message div {
+		padding:10px;
+	    border: 1px solid #CCCCCC;
+	    border-radius: 10px 10px 10px 10px;
+	}
+	
+	#ChatBox .message-area .chat-message-me .message {
+		float: right;
+	}
+	
+	#ChatBox .message-area .chat-message .message {
+		float: left;
+	}
+	
+	#ChatBox .message-area .chat-message .message div {
+		background: none repeat scroll 0 0 #FFFFFF;
+	}
+	
+	#ChatBox .message-area .chat-message-me .message div {
+		background: none repeat scroll 0 0 #EBF7F8;
+	}
+	
+	#chatActionWrapper {
+		padding: 20px 0;
+	}
+	
+	#chatAction {
+    	padding: 0px;
+    	z-index: 1; 
+	}
+	
+	#chatAction #chatInput {
+    	background: #fff;
+    	border: 1px solid #ccc;
+	    border-radius: 10px;
+	    margin: 0px 10px 8px;
+	    width: 90%;
+	}
+	
+	#chatAction #chatBtn {
+		float: right;
+		margin-right:10px;
+	}
+	
+	#chatUserOnline .title {
+		padding: 8px;
+		background: #fff;
+		border: 1px solid #ccc;
+	    border-radius: 10px;
+	}
+	
+	#chatUserOnline .title .link {
+		float: right;
+		margin-right: 5px;
+	}
+	
+	#chatUserOnline {
+		margin-top:10px;
+	    overflow-y: auto;
+	    background: #fff;
+	    z-index: 10; 
+	    padding:10px;
+	}
+	
+	#chatUserOnline ul {
+		margin:5px;
+	}
+	
+	#chatUserOnline ul li.online-user {
+		background: none repeat scroll 0 0 #FFFFFF;
+	    border: 1px solid #ccc;
+	    border-radius: 13px 13px 13px 13px;
+	    display: block;
+	    padding: 9px;
+	    margin:5px 0;
+	}
+	
+	#chatUserOnline ul li .user-image {
+		float:left;
+		display: block;
+		padding: 3px;
+		border: #C7C7C7 2px solid;
+		border-radius: 3px;
+	}
+	
+	#chatUserOnline ul li .name {
+		display: block;
+	    float: left;
+	    font-size: 14px;
+	    padding: 8px;
+	}
+	
+	#chatUserOnline ul li .links {
+		display: block;
+	    float: right;
+	    padding: 8px;
+	}

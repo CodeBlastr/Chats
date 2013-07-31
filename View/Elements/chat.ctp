@@ -1,53 +1,44 @@
-	<div id="ChatBox">
-		<div class="message-area">
-			<p>Chat is Currently Unavailable</p>
+<?php
+	
+	/**
+	 * Chatbox Element Displays a chat box on the right side of the screen
+	 * 
+	 * @param $room - The name of the chat room
+	 * 
+	 */
+
+
+?>
+
+<div id="ChatBox">
+	<div class="welcome">
+		<div class="close-chat">
+			<a href="#"><i class="icon-circle-arrow-up"></i></a>
+		</div>
+		<div class="msg">Chat is Unvavailable</div>
 		</div>
 		
-		<div id="chatAction" class="well hidden">
-			<input type="textInput" id="chatInput" /><button id="chatBtn" class="btn">Send Message</button>
+	<div class="message-area">
+		<div></div>
+	</div>
+	
+	
+	<div id="chatActionWrapper" class="hidden">
+		<div id="chatAction" class="clearfix">
+			<textArea type="textInput" id="chatInput"></textArea><button id="chatBtn" class="btn">Send Message</button>
+			<div class="clear"></div>
 		</div>
-		
+		<div id="chatUserOnline">
+			<div class="title"><?php echo __("Who's Online"); ?><a href='#' class="link"><i class="icon-circle-arrow-down"></i></a></div>
+			<ul>
+				<li style="display: none;"></li>
+			</ul>
+		</div>
 	</div>
 	
-	<div id="chatUserOnline">
-		<ul>
-			
-		</ul>
-	</div>
-		
+</div>
 
-<style>
-	#ChatBox {
-		position: fixed;
-		top: 50px;
-		right: 0px;
-		width: 300px;
-		border: 1px solid #000;
-		background: #ccc;
-		overflow: hidden;
-		padding: 10px;
-		border-bottom-left-radius: 20px;
-		border-top-left-radius: 20px;
-	}
-	
-	#ChatBox .message-area {
-		margin-bottom: 116px;
-		max-height:240px;
-		overflow-y:auto;
-	}
-	
-	#chatAction {
-    	margin-left: -10px;
-    	position: absolute;
-    	top: 271px;
-    	width: 280px;
-	}
-	#chatAction #chatInput {
-		margin-bottom: 8px;
-    	width: 100%;
-	}
-</style>
-
-<script src="/Chats/js/socket.io.min.js"></script>
+<script type="text/javascript" src="/Chats/js/socket.io.min.js"></script>
+<script type="text/javascript">var room = '<?php echo isset($room) ? $room : ''; ?>';</script>
 <script type="text/javascript" src="/Chats/js/chatbox.js"></script>
 <link rel="stylesheet" type="text/css" href="/Chats/css/chatbox.css" />

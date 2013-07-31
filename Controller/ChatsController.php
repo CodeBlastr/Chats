@@ -13,7 +13,7 @@ App::uses('AppController', 'Controller');
  */
 class _ChatsController extends AppController {
 	
-	public $uses = array('Chats.Chat');
+	public $uses = array('Chats.Chat', 'Users.User');
 	
 	public $allowedActions = array('check_key', 'create_room', 'destroy');
 
@@ -97,6 +97,18 @@ class _ChatsController extends AppController {
 			throw new ForbiddenException();
 		}
 		
+	}
+	
+	public function getUserInfo($key) {
+		//Helper to pass the index of the user on client side.
+		if(isset($this->request->query['index'])) {
+			$this->set('index', $this->request->query['index']);
+		}
+		if(isset($key)) {
+			$this->set('User', $this->Chat->getUserByKey($key));
+		}else {
+			throw new NotFoundException('user not found');
+		}
 	}
 	
 	public function testChat() {
