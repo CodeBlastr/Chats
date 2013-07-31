@@ -96,7 +96,7 @@ io.sockets.on('connection', function (socket) {
   
   
   socket.on('message', function (message) {
-  	  message.message = message.message.replace(/[|&;$%@"<>()+,]/g, "");
+  	  message.message = htmlEscape(message.message);
       io.sockets.in(socket.handshake.room).json.emit('message', message);
   });
   
@@ -140,3 +140,12 @@ io.sockets.on('connection', function (socket) {
   });
   
 });
+
+function htmlEscape(str) {
+    return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+}

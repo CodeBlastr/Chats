@@ -58,18 +58,19 @@
 		});
 		
 		socket.on('new_peer_connected', function (data) {
-			console.log(data);
 			otherusers.push(data);
 			whosOnline(data);
 		});
 		
 		socket.on('client_disconnect', function (data) {
 			for (var i=0;i<otherusers.length;i++) {
-				if(otherusers[i].id == data) {
-					delete otherusers[i];	
+				if(otherusers[i].id === data) {
+					otherusers.splice(i,1);	
 				}
 			}
-			whosOnline();
+			$('#'+data).remove();
+			$('#chatActionWrapper').css('margin-bottom', $('#chatUserOnline').height()*-1);
+			
 		});
 		
 		socket.on('get_peers', function (data) {
@@ -82,10 +83,12 @@
 		$('#chatBtn').on('click', function (e) {
 			e.preventDefault();
 			var message = $('#chatInput').val();
-			message = message.replace(/[|&;$%@"<>()+,]/g, "");
 			var data = {id: me, name: chatname, message: message};
 			$('#chatInput').val('');
-			socket.emit('message', data);
+			if(message != ''){
+				socket.emit('message', data);
+			}
+			
 		});
 		
 		
@@ -142,6 +145,7 @@
 	
 	function whosOnline(user) {
 		if (typeof user === 'undefined') {
+			console.log('all');
 			for (var i=0;i<otherusers.length;i++) {
 					$.get(
 						"/chats/chats/getUserInfo/"+otherusers[i].key+".json", { index: i }, "success", "json").done(
@@ -150,6 +154,7 @@
 						});
 				}
 		}else {
+			console.log('one');
 			var userindex;
 			var newuser = $.grep(otherusers, function (otheruser, arrindex) { 
 					userindex = arrindex;
@@ -171,7 +176,7 @@
 	
 	function renderOnlineUser(index) {
 		var html = '';
-		html += '<li class="online-user clearfix"><div class="user-image"><img width="25" height="25" src="'+otherusers[index].image+'" /></div>';
+		html += '<li id="'+otherusers[index].id+'" class="online-user clearfix"><div class="user-image"><img width="25" height="25" src="'+otherusers[index].image+'" /></div>';
 		html += '<div class="name">'+otherusers[index].name+'</div>';
 		html += '<div class="links"><i class="icon-envelope" data-index="'+index+'"></i></div></li>';
 		console.log(html);
@@ -182,17 +187,16 @@
 		var user;
 		var html = '';
 		//Clean string
-		data.message = data.message.replace(/[|&;$%@"<>()+,]/g, "");
+		
+		data.message = data.message;
 		
 		//Find the User
+		user = $.grep(otherusers, function (other, arrindex) {
+					return other.id == data.id.id
+		});
 		
-		for (var i=0;i<otherusers.length;i++) {
-			if(otherusers[i].id == data.id.id) {
-				user = otherusers[i];
-			}
-		}
-		
-		if (user.id == me.id) {
+		user = user[0];
+		if (user.id === me.id) {
 			html += '<div class="chat-message-me">';
 		}else {
 			html += '<div class="chat-message">';
@@ -210,7 +214,7 @@
 		html += '<div class="clearfix"></div>';
 		html += '</div>';
 		
-		chatbox.find('.message-area').append(html);
+		chatbox.find('.message-area .msgwrapper').append(html);
 		
 		var msgarea = chatbox.find('.message-area');
 		var calcheight = parseInt(chatbox.css('max-height').match(/\d+/), 10)-$('.welcome').height()-$('#chatActionWrapper').height()-heightadj;
@@ -218,9 +222,18 @@
 			msgarea.css('height', calcheight+'px');
 		}
 		msgarea.animate({ 
-			   scrollTop: msgarea.height()}, 
+			   scrollTop: msgarea.find('.msgwrapper').height()}, 
 			   500
 			);
+	}
+	
+	function htmlUnescape(value){
+	    return String(value)
+	        .replace(/&quot;/g, '"')
+	        .replace(/&#39;/g, "'")
+	        .replace(/&lt;/g, '<')
+	        .replace(/&gt;/g, '>')
+	        .replace(/&amp;/g, '&');
 	}
 	
 	

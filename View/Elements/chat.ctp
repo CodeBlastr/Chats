@@ -19,7 +19,7 @@
 		</div>
 		
 	<div class="message-area">
-		<div></div>
+		<div class="msgwrapper"></div>
 	</div>
 	
 	

@@ -16,6 +16,7 @@
 	}
 	
 	#ChatBox .message-area {
+		overflow:hidden;
 		overflow-y:auto;
 	}
 	
@@ -54,9 +55,11 @@
 	}
 	
 	#ChatBox .message div {
+		overflow:hidden;
 		padding:10px;
 	    border: 1px solid #CCCCCC;
 	    border-radius: 10px 10px 10px 10px;
+	    word-wrap: break-word;
 	}
 	
 	#ChatBox .message-area .chat-message-me .message {
@@ -111,7 +114,6 @@
 	
 	#chatUserOnline {
 		margin-top:10px;
-	    overflow-y: auto;
 	    background: #fff;
 	    z-index: 10; 
 	    padding:10px;
@@ -119,6 +121,9 @@
 	
 	#chatUserOnline ul {
 		margin:5px;
+		max-height:130px;
+		overflow:hidden;
+		overflow-y:auto;
 	}
 	
 	#chatUserOnline ul li.online-user {
