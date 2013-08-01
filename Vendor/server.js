@@ -128,12 +128,10 @@ io.sockets.on('connection', function (socket) {
   		}
   	});
   	
-  	if(room in clients) {
-  		for (var i=0;i<clients.length;i++) {
-				if(clients[room][i].id == id) {
-					delete clients[i];
-					console.log('Removed: '+id);
-				}
+  	for (var i=0;i<clients.length;i++) {
+			if(clients[i].id == id) {
+				clients.splice(i,1);
+				console.log('Removed: '+id);
 			}
   	}
   		
