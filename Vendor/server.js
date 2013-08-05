@@ -54,45 +54,49 @@ io.set('authorization', function (handshakeData, cb) {
 });
 
 io.sockets.on('connection', function (socket) {
-	
-  var client = {};
+
+  var client = {}	
   client.id = socket.id
   client.name = socket.handshake.name;
   client.role = socket.handshake.role;
   client.room = socket.handshake.room;
   client.key = socket.handshake.key;
+  client.socket = socket;
   
-  clients.push(client);
+  clients[socket.id] = client;
   socket.join(socket.handshake.room);
-  
   //Tell people that a new peer connected to their room
   socket.json.emit('hello', { message: 'Hello '+socket.handshake.name+', Welcome to '+socket.handshake.room });
   
   //Send the get_peers to client on connection
   peers = [];
-  for (var i=0;i<clients.length;i++) {
-  	for (var j=0 ; j < io.sockets.clients(socket.handshake.room).length ; j++) {
-  		if(io.sockets.clients(socket.handshake.room)[j].id == clients[i].id){
-  			peers.push(clients[i]);
-  		}	
-  	}
+  for (var j=0 ; j < io.sockets.clients(socket.handshake.room).length ; j++) {
+  		var peer = {}
+  		peer.id = clients[io.sockets.clients(socket.handshake.room)[j].id].id;
+  		peer.name = clients[io.sockets.clients(socket.handshake.room)[j].id].name;
+  		peer.role = clients[io.sockets.clients(socket.handshake.room)[j].id].role;
+  		peer.room = clients[io.sockets.clients(socket.handshake.room)[j].id].room;
+  		peer.key = clients[io.sockets.clients(socket.handshake.room)[j].id].key;
+		peers.push(peer);
   }
   
   console.log(peers);
   socket.json.emit('get_peers',
       {
         connections: peers,
-        you: client
+        you: {id: client.id, name: client.name, role: client.role, room: client.room, key: client.key }
       });
   
   //If an offer has already been made send it to the new client for connection
-  if(socket.handshake.room in offers) {
-  	data = offers[socket.handshake.room];
-  	socket.json.emit('receive_offer', data);
-  }
+  // if(socket.handshake.room in offers) {
+  	// data = offers[socket.handshake.room];
+  	// socket.json.emit('receive_offer', data);
+  // }
   
   //Let everyone else in the room know your are here
-  socket.broadcast.to(socket.handshake.room).json.emit('new_peer_connected', client);
+  socket.broadcast.to(socket.handshake.room).json.emit('new_peer_connected', 
+  		{ id: client.id, name: client.name, role: client.role, room: client.room, key: client.key }
+  	);
   
   
   socket.on('message', function (message) {
@@ -102,7 +106,7 @@ io.sockets.on('connection', function (socket) {
   
   //Receive and Send ICE canidates to room memebers
   socket.on('send_ice_candidate', function(data){
-  	 socket.json.broadcast.to(socket.handshake.room).emit('receive_ice_candidate',
+  	 clients[data.socketId].socket.json.emit('receive_ice_candidate',
         {
           label: data.label,
           candidate: data.candidate,
@@ -112,10 +116,19 @@ io.sockets.on('connection', function (socket) {
   	
   //Receive offer and send to correct socket
   socket.on('send_offer', function(data) {
+  	var senderid = data.socketId;
+  	console.log(data);
+  	console.log(clients[senderid]);
     var data = { sdp: data.sdp, socketId: socket.id };
-    offers[socket.handshake.room] = data;	
-    socket.json.broadcast.to(socket.handshake.room).emit('receive_offer', data);
-    
+    //offers[socket.handshake.room] = data;
+    clients[senderid].socket.emit('receive_offer', data);  
+  });
+  
+  socket.on('send_answer', function(data) {
+  	var senderid = data.socketId;
+    var data = { sdp: data.sdp, socketId: socket.id };
+    //offers[socket.handshake.room] = data;	
+    clients[senderid].socket.emit('receive_answer', data);  
   });
   
   socket.on('disconnect', function(){
@@ -128,13 +141,27 @@ io.sockets.on('connection', function (socket) {
   		}
   	});
   	
-  	for (var i=0;i<clients.length;i++) {
-			if(clients[i].id == id) {
-				clients.splice(i,1);
-				console.log('Removed: '+id);
-			}
+  	var i = 0;
+    for (c in clients) {
+  		console.log(c);
+  		if(c == id) {
+      		clients.splice(i, 1);
+  		}
+  		i++;
   	}
+  	
+  	// if(room in offers) {
+		// if(offers[room].socketId == id) {
+			// delete offers[room];
+			// console.log('Removed Offer: '+id);
+		// }
+	// }
   		
+  });
+  
+  socket.on('remove_stream', function(data) {
+    //offers[socket.handshake.room] = data;	
+    socket.json.broadcast.to(socket.handshake.room).emit('remove_stream', data);
   });
   
 });

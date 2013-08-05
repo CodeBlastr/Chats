@@ -1,3 +1,7 @@
+var socket = '';
+var otherusers = [];
+var me = '';
+
 (function($) {
 	
 	if(room == ''){
@@ -21,7 +25,6 @@
   			chatbox.css('margin-bottom', heightadj);
 	});
 	
-	var otherusers = [];
 	var chatbox =  $('#ChatBox');
 	
 	//Defaults on chatbox
@@ -29,16 +32,15 @@
 	
 	var closed = true;
 	var whosclosed = false;
-	
-	var me = '';
+
 	
 	function startSocket(data) {
-		console.log('Starting Socket');
 		
 		var chatkey = data.data.Chat.chat_hash;
 		var chatroom = data.data.Chat.room;
 		var chatname = data.data.Chat.name;
-		var socket = io.connect('ws://192.168.1.8:1337/', { query: "key="+chatkey+"&room="+chatroom+"&name="+chatname });
+		
+		socket = io.connect('ws://192.168.1.8:1337/', { query: "key="+chatkey+"&room="+chatroom+"&name="+chatname+"&role="+roleVideo });
 		
 		socket.on('error', function () {
 			console.log('Chat Unavailable');
@@ -46,6 +48,9 @@
 		
 		socket.on('connect', function () {
 			toggleChat();
+			if(video) {
+				rtc.connect();
+			}
 		});
 		
 		socket.on('hello', function (data) {
@@ -145,7 +150,6 @@
 	
 	function whosOnline(user) {
 		if (typeof user === 'undefined') {
-			console.log('all');
 			for (var i=0;i<otherusers.length;i++) {
 					$.get(
 						"/chats/chats/getUserInfo/"+otherusers[i].key+".json", { index: i }, "success", "json").done(
@@ -154,7 +158,6 @@
 						});
 				}
 		}else {
-			console.log('one');
 			var userindex;
 			var newuser = $.grep(otherusers, function (otheruser, arrindex) { 
 					userindex = arrindex;
@@ -179,7 +182,6 @@
 		html += '<li id="'+otherusers[index].id+'" class="online-user clearfix"><div class="user-image"><img width="25" height="25" src="'+otherusers[index].image+'" /></div>';
 		html += '<div class="name">'+otherusers[index].name+'</div>';
 		html += '<div class="links"><i class="icon-envelope" data-index="'+index+'"></i></div></li>';
-		console.log(html);
 		$('#chatUserOnline ul li').last().after(html);
 	}
 	

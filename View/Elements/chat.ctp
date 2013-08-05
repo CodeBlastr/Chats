@@ -39,6 +39,13 @@
 </div>
 
 <script type="text/javascript" src="/Chats/js/socket.io.min.js"></script>
-<script type="text/javascript">var room = '<?php echo isset($room) ? $room : ''; ?>';</script>
+<script type="text/javascript">
+	var room = '<?php echo isset($room) ? $room : ''; ?>';
+	var video = <?php echo isset($video) && $video ? 'true' : 'false'; ?>;
+	var roleVideo = '<?php echo isset($presenter) && $presenter ? 'presenter' : '' ?>';
+</script>
+<?php if(isset($video) && $video): ?>
+	<script type="text/javascript" src="/Chats/js/webrtc.io.js"></script>
+<?php endif; ?>
 <script type="text/javascript" src="/Chats/js/chatbox.js"></script>
 <link rel="stylesheet" type="text/css" href="/Chats/css/chatbox.css" />
