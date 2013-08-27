@@ -40,7 +40,7 @@ var me = '';
 		var chatroom = data.data.Chat.room;
 		var chatname = data.data.Chat.name;
 		
-		socket = io.connect('ws://192.168.1.8:1337/', { query: "key="+chatkey+"&room="+chatroom+"&name="+chatname+"&role="+roleVideo });
+		socket = io.connect('ws://54.221.239.50:1337/', { query: "key="+chatkey+"&room="+chatroom+"&name="+chatname+"&role="+roleVideo });
 		
 		socket.on('error', function () {
 			console.log('Chat Unavailable');
