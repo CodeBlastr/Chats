@@ -11,9 +11,6 @@ var offers = [];
 
 var io = require('socket.io').listen(1337);
 
-
-var io = require('socket.io').listen(80);
-
 io.configure('production', function(){
   io.enable('browser client minification');  // send minified client
   io.enable('browser client etag');          // apply etag caching logic based on version number
