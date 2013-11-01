@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
  *
  * @property Chat $Chat
  */
-class _ChatsController extends AppController {
+class AppChatsController extends AppController {
 	
 	public $uses = array('Chats.Chat', 'Users.User');
 	
@@ -117,5 +117,5 @@ class _ChatsController extends AppController {
 }
 
 if (!isset($refuseInit)) {
-	class ChatsController extends _ChatsController {}
+	class ChatsController extends AppChatsController {}
 }
